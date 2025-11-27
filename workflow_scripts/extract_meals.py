@@ -31,7 +31,7 @@ def main():
         "uzsonna": "..."
       }
     }
-    One object per day. No extra text.
+    One object per day. No extra text. Please remove everything from the meals matching the pattern (...)*.
     """
 
     resp = openai.responses.create(
@@ -55,7 +55,7 @@ def main():
     meals = json.loads(resp.output_text)
 
     # Save JSON
-    filename = f"{year}-{month:02d}.json"
+    filename = os.path.join("data", f"{year}-{month:02d}.json")
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(meals, f, ensure_ascii=False, indent=2)
 
