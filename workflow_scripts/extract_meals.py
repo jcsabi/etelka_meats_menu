@@ -63,8 +63,9 @@ One object per day. No extra text. Please remove everything from the meals match
 def check_meals_pdf_exists_for_month(url: str) -> bool:
     exists = False
     try:
-        resp = requests.head(url, timeout=10, allow_redirects=True)
-        print(f"Checking URL: {url}, response: {resp}")
+        print("Checking URL existence:", url)
+        resp = requests.get(url, timeout=10, allow_redirects=True, stream=True)
+        print(f"URL check response: {resp}, headers: {resp.headers}")
         exists = resp.status_code == 200 and "pdf" in resp.headers.get("Content-Type", "").lower()
     except requests.RequestException as e:
         print(f"Error checking URL, {url}: {e}")
