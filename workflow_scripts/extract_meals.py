@@ -14,7 +14,8 @@ def extract_and_store_meal_for_date(year: int, month: int) -> None:
     if already_available:
         return
     meals = extract_meals_into_json(year, month)
-    store_meals_for_month(year, month, meals)
+    if meals is not None:
+        store_meals_for_month(year, month, meals)
 
 
 def extract_meals_into_json(year: int, month: int) -> Any:
@@ -23,7 +24,7 @@ def extract_meals_into_json(year: int, month: int) -> Any:
     pdf_url = f"https://suli-host.hu/wp-content/uploads/etlap/{month_str}/suli_normal_{month_str}_a.pdf"
 
     if not check_meals_pdf_exists_for_month(pdf_url):
-        return
+        return None
 
     # Prompt GPT-5 for structured JSON
     prompt = """
@@ -63,9 +64,10 @@ def check_meals_pdf_exists_for_month(url: str) -> bool:
     exists = False
     try:
         resp = requests.head(url, timeout=10, allow_redirects=True)
+        print(f"Checking URL: {url}, response: {resp}")
         exists = resp.status_code == 200 and "pdf" in resp.headers.get("Content-Type", "").lower()
-    except requests.RequestException:
-        pass
+    except requests.RequestException as e:
+        print(f"Error checking URL, {url}: {e}")
     print(f"The given url does not exists: {url}")
     return exists
 
